@@ -1,0 +1,16 @@
+export const categories = [
+    { key: 'home', name: 'Casa/Aluguel', icon: 'home', color: '#FF872C' },
+    { key: 'food', name: 'Alimentação', icon: 'emoji-food-beverage', color: '#E83F5B' },
+    { key: 'purchases', name: 'Compras', icon: 'shopping-cart', color: '#9C001A' },
+    { key: 'health', name: 'Saúde', icon: 'medical-services', color: '#32CD32' },
+    { key: 'beauty', name: 'Beleza', icon: 'face', color: '#FF00FF' },
+    { key: 'leisure', name: 'Lazer', icon: 'nightlife', color: '#26195C' },
+    { key: 'travel', name: 'Viagem', icon: 'flight-takeoff', color: '#A020F0' },
+    { key: 'pets', name: 'Pets', icon: 'pets', color: '#DEB887' },
+    { key: 'sale', name: 'Vendas', icon: 'trending-up', color: '#12A454' },
+    { key: 'salary', name: 'Salário', icon: 'attach-money', color: '#1E90FF' },
+    { key: 'studies', name: 'Estudos', icon: 'school', color: '#5636d3' },
+    { key: 'car', name: 'Carro', icon: 'directions-car', color: '#708090' },
+    { key: 'fuel', name: 'Combustível', icon: 'local-gas-station', color: '#4f4f4f' },
+    { key: 'transport', name: 'Transporte', icon: 'commute', color: '#808000' },
+];
