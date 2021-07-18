@@ -42,39 +42,46 @@ interface IHighlightData {
 export function Dashboard() {
     const [isLoading, setIsLoading] = useState(true);
     const [transaction, setTransaction] = useState<IDataListProps[]>([]);
+    const [entries, setEntries] = useState<IDataListProps[]>([]);
+    const [expensives, setExpensives] = useState<IDataListProps[]>([]);
     const [highlightData, setHighlightData] = useState<IHighlightData>(
         {} as IHighlightData
     );
 
     const theme = useTheme();
 
-    async function request() {
-        const dataKey = '@gofinances:transactions';
-        const response = await AsyncStorage.getItem(dataKey);
-        const transactions = response ? JSON.parse(response) : [];
+    function formattedAmount(amountToFormat: number) {
+        const amount = amountToFormat
+        .toLocaleString('pt-BR', {
+            style: 'currency',
+            currency: 'BRL'
+        })
+        return amount;
+    };
 
+    function formattedDate(dateToFormat: string) {
+        const date = Intl.DateTimeFormat('pt-BR', {
+            day: '2-digit',
+            month: '2-digit',
+            year: '2-digit',
+        }).format(new Date(dateToFormat));
+        return date;
+    };
+
+    function formattedTransaction(transactionsToFormat: IDataListProps[]) {
         let entriesTotal = 0;
-        let expensiveTotal = 0;
-
-        const transactionsFormatted: IDataListProps[] = transactions
+        let expensivesTotal = 0;
+        let total = 0;
+        const transactionsFormatted: IDataListProps[] = transactionsToFormat
         .map((item: IDataListProps) => {
-
             if (item.type === 'up') {
                 entriesTotal += Number(item.value);
             } else {
-                expensiveTotal += Number(item.value);
+                expensivesTotal += Number(item.value);
             }
-            const value = Number(item.value)
-            .toLocaleString('pt-BR', {
-                style: 'currency',
-                currency: 'BRL'
-            })
-            const date = Intl.DateTimeFormat('pt-BR', {
-                day: '2-digit',
-                month: '2-digit',
-                year: '2-digit',
-            }).format(new Date(item.date));
-
+            total = entriesTotal - expensivesTotal;
+            const value = formattedAmount(Number(item.value));
+            const date = formattedDate(item.date)
             return {
                 id: item.id,
                 description: item.description,
@@ -84,32 +91,50 @@ export function Dashboard() {
                 date,
             }
         });
+        return {transactionsFormatted, entriesTotal, expensivesTotal, total};
+    };
 
-        setTransaction(transactionsFormatted);
-        const total = entriesTotal - expensiveTotal;
+    async function request() {
+        const dataKey = '@gofinances:transactions';
+        const response = await AsyncStorage.getItem(dataKey);
+        const transactions = response ? JSON.parse(response) : [];
+
+        const {
+            transactionsFormatted,
+            entriesTotal,
+            expensivesTotal,
+            total
+        } = formattedTransaction(transactions);
+
+        // **********************[FORMATTING AMOUNT]****************************
         setHighlightData({
             entries: {
-                amount: entriesTotal
-                .toLocaleString('pt-BR', {
-                    style: 'currency',
-                    currency: 'BRL'
-                })
+                amount: formattedAmount(entriesTotal),
             },
             expensives: {
-                amount: expensiveTotal
-                .toLocaleString('pt-BR', {
-                    style: 'currency',
-                    currency: 'BRL'
-                })
+                amount: formattedAmount(expensivesTotal),
             },
             total: {
-                amount: total
-                .toLocaleString('pt-BR', {
-                    style: 'currency',
-                    currency: 'BRL'
-                })
+                amount: formattedAmount(total),
             }
         });
+
+        // **********************[ALL TRANSACTIONS]*****************************
+        setTransaction(transactionsFormatted);
+        
+        // *****************[ONLY ENTRIES TRANSACTIONS]*************************
+        const transactionsEntries = transactions.filter(
+            (transactions: IDataListProps) => transactions.type === 'up'
+        );
+        setEntries(transactionsEntries);
+
+        // ***************[ONLY EXPENSIVES TRANSACTIONS]************************
+        const transactionsExpensives = transactions.filter(
+            (transactions: IDataListProps) => transactions.type === 'down'
+        );
+        setExpensives(transactionsExpensives);
+
+        // **********************[STOP LOADING]*********************************
         setIsLoading(false);
     }
 
