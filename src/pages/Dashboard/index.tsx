@@ -43,7 +43,11 @@ export function Dashboard() {
     const [isLoading, setIsLoading] = useState(true);
     const [transaction, setTransaction] = useState<IDataListProps[]>([]);
     const [entries, setEntries] = useState<IDataListProps[]>([]);
+    const [firstEntrie, setFirstEntrie] = useState<IDataListProps>({} as IDataListProps);
+    const [lastEntrie, setLastEntrie] = useState<IDataListProps>({} as IDataListProps);
     const [expensives, setExpensives] = useState<IDataListProps[]>([]);
+    const [firstExpensive, setFirstExpensive] = useState<IDataListProps>({} as IDataListProps);
+    const [lastExpensive, setLastExpensive] = useState<IDataListProps>({} as IDataListProps);
     const [highlightData, setHighlightData] = useState<IHighlightData>(
         {} as IHighlightData
     );
@@ -123,16 +127,30 @@ export function Dashboard() {
         setTransaction(transactionsFormatted);
         
         // *****************[ONLY ENTRIES TRANSACTIONS]*************************
-        const transactionsEntries = transactions.filter(
+        const transactionsEntries = transactionsFormatted.filter(
             (transactions: IDataListProps) => transactions.type === 'up'
         );
         setEntries(transactionsEntries);
 
+        // ************[FIRST AND LAST ENTRIES TRANSACTIONS]********************
+        const firstEntrie = transactionsEntries[0];
+        const indexEntrie = transactionsEntries.length - 1;
+        const lastEntrie = transactionsEntries[indexEntrie];
+        setFirstEntrie(firstEntrie);
+        setLastEntrie(lastEntrie);
+
         // ***************[ONLY EXPENSIVES TRANSACTIONS]************************
-        const transactionsExpensives = transactions.filter(
+        const transactionsExpensives = transactionsFormatted.filter(
             (transactions: IDataListProps) => transactions.type === 'down'
         );
         setExpensives(transactionsExpensives);
+
+        // **********[FIRST AND LAST EXPENSIVES TRANSACTIONS]*******************
+        const firstExpensive = transactionsExpensives[0];
+        const indexExpensive = transactionsExpensives.length - 1;
+        const lastExpensive = transactionsExpensives[indexExpensive];
+        setFirstExpensive(firstExpensive);
+        setLastExpensive(lastExpensive);
 
         // **********************[STOP LOADING]*********************************
         setIsLoading(false);
