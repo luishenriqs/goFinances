@@ -31,6 +31,7 @@ export interface IDataListProps extends ITransactionCardProps {
 
 interface IHighlightProps {
     amount: string;
+    lastTransaction: string;
 }
 
 interface IHighlightData {
@@ -98,6 +99,13 @@ export function Dashboard() {
         return {transactionsFormatted, entriesTotal, expensivesTotal, total};
     };
 
+    function getDayAndMonth(date: Date) {
+        const dateToGetDay = new Date(date);
+        const day = dateToGetDay.getDate();
+        const month = dateToGetDay.toLocaleString('pt-BR', { month: 'long' })
+        return {day, month};
+    };
+
     async function request() {
         const dataKey = '@gofinances:transactions';
         const response = await AsyncStorage.getItem(dataKey);
@@ -110,18 +118,6 @@ export function Dashboard() {
             total
         } = formattedTransaction(transactions);
 
-        // **********************[FORMATTING AMOUNT]****************************
-        setHighlightData({
-            entries: {
-                amount: formattedAmount(entriesTotal),
-            },
-            expensives: {
-                amount: formattedAmount(expensivesTotal),
-            },
-            total: {
-                amount: formattedAmount(total),
-            }
-        });
 
         // **********************[ALL TRANSACTIONS]*****************************
         setTransaction(transactionsFormatted);
@@ -139,6 +135,16 @@ export function Dashboard() {
         setFirstEntrie(firstEntrie);
         setLastEntrie(lastEntrie);
 
+        // ******************[DAY AND MONTH OF ENTRIES]*************************
+        const onlyEntries = transactions.filter(
+            (transactions: IDataListProps) => transactions.type === 'up'
+        );
+        const firstDayAndMonthEntries = getDayAndMonth(new Date(onlyEntries[0].date));
+        
+        const lastIndexEntrie = onlyEntries.length - 1;
+        const lastDayAndMonthEntries = getDayAndMonth(
+            new Date(onlyEntries[lastIndexEntrie].date));
+
         // ***************[ONLY EXPENSIVES TRANSACTIONS]************************
         const transactionsExpensives = transactionsFormatted.filter(
             (transactions: IDataListProps) => transactions.type === 'down'
@@ -151,6 +157,36 @@ export function Dashboard() {
         const lastExpensive = transactionsExpensives[indexExpensive];
         setFirstExpensive(firstExpensive);
         setLastExpensive(lastExpensive);
+
+        // ****************[DAY AND MONTH OF EXPENSIVES]************************
+        const onlyExpensives = transactions.filter(
+            (transactions: IDataListProps) => transactions.type === 'down'
+        );
+        const firstDayAndMonthExpensive = getDayAndMonth(
+            new Date(onlyExpensives[0].date));
+        
+        const lastIndexExpensive = onlyExpensives.length - 1;
+        const lastDayAndMonthExpensives = getDayAndMonth(
+            new Date(onlyExpensives[lastIndexExpensive].date));
+
+        // **********************[FORMATTING AMOUNT]****************************
+        setHighlightData({
+            entries: {
+                amount: formattedAmount(entriesTotal),
+                lastTransaction: 
+                `Última entrada dia ${lastDayAndMonthEntries.day} de ${lastDayAndMonthEntries.month}`,
+            },
+            expensives: {
+                amount: formattedAmount(expensivesTotal),
+                lastTransaction:
+                `Última saída dia ${lastDayAndMonthExpensives.day} de ${lastDayAndMonthExpensives.month}`,
+            },
+            total: {
+                amount: formattedAmount(total),
+                lastTransaction: 
+                ``,
+            }
+        });
 
         // **********************[STOP LOADING]*********************************
         setIsLoading(false);
@@ -195,13 +231,13 @@ export function Dashboard() {
                         <HighlightCard
                             title="Entradas"
                             amount={highlightData.entries.amount}
-                            lastTransaction="Última entrada dia 13 de abril"
+                            lastTransaction={highlightData.entries.lastTransaction}
                             type="up"
                         />
                         <HighlightCard
                             title="Saídas"
                             amount={highlightData.expensives.amount}
-                            lastTransaction="Última saída dia 08 de abril"
+                            lastTransaction={highlightData.expensives.lastTransaction}
                             type="down"
                         />
                         <HighlightCard
