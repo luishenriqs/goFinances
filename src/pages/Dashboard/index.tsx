@@ -192,10 +192,6 @@ export function Dashboard() {
         setIsLoading(false);
     }
 
-    useEffect(() => {
-        request();
-    }, []);
-
     useFocusEffect(useCallback(() => {
         request();
     }, []));
