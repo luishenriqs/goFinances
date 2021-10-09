@@ -6,11 +6,9 @@ import React from 'react';
 import { StatusBar } from 'react-native';
 import AppLoading from 'expo-app-loading';
 import { ThemeProvider } from 'styled-components';
-import { NavigationContainer } from '@react-navigation/native';
 import theme from './src/global/styles/theme';
 import { AuthProvider } from './src/hooks/Auth';
-import { AppRoutes } from './src/routes/app.routes';
-import { SignIn } from './src/pages/SignIn';
+import { Routes } from './src/routes/index.routes';
 import {
   useFonts,
   Poppins_400Regular,
@@ -33,13 +31,10 @@ export default function App() {
 
   return (
     <ThemeProvider theme={theme}>
-      <NavigationContainer>
         <StatusBar barStyle='light-content'/>
         <AuthProvider>
-          {/* <AppRoutes /> */}
-          <SignIn />
+          <Routes />
         </AuthProvider>
-      </NavigationContainer>
     </ThemeProvider>
   );
 }
