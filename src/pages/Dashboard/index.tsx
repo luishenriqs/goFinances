@@ -1,6 +1,7 @@
 import React, { useState, useCallback } from 'react';
 import { ActivityIndicator } from 'react-native';
 import { useFocusEffect } from '@react-navigation/native';
+import { useAuth } from '../../hooks/Auth';
 import { useTheme } from 'styled-components';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { HighlightCard } from '../../Components/HighlightCard';
@@ -50,6 +51,7 @@ export function Dashboard() {
     );
 
     const theme = useTheme();
+    const { user, signOut } = useAuth();
 
     function formattedAmount(amountToFormat: number) {
         let amount = amountToFormat
@@ -203,15 +205,15 @@ export function Dashboard() {
                         <UserWrapper>
                             <UserInfo>
                                 <Photo 
-                                    source={{uri: 'https://avatars.githubusercontent.com/u/63956850?v=4'}}
+                                    source={{uri: user.photo}}
                                 />
                                 <User>
                                     <UserGreeting>Olá,</UserGreeting>
-                                    <UserName>Luís Henrique</UserName>
+                                    <UserName>{user.name}</UserName>
                                 </User>
                             </UserInfo>
-                            <LogoutButton onPress={() => {}}> 
-                                <Icon name="power"/>
+                            <LogoutButton onPress={signOut}> 
+                                <Icon name="power-settings-new"/>
                             </LogoutButton>
                         </UserWrapper>
                     </Header>

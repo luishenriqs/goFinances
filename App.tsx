@@ -7,7 +7,7 @@ import { StatusBar } from 'react-native';
 import AppLoading from 'expo-app-loading';
 import { ThemeProvider } from 'styled-components';
 import theme from './src/global/styles/theme';
-import { AuthProvider } from './src/hooks/Auth';
+import { AuthProvider, useAuth } from './src/hooks/Auth';
 import { Routes } from './src/routes/index.routes';
 import {
   useFonts,
@@ -24,8 +24,10 @@ export default function App() {
     Poppins_700Bold
   });
 
+  const { userStorageLoading } = useAuth();
+
   //=> expo install expo-app-loading
-  if (!fontsLoaded) {
+  if (!fontsLoaded || userStorageLoading) {
     return <AppLoading />
   }
 
@@ -37,5 +39,5 @@ export default function App() {
         </AuthProvider>
     </ThemeProvider>
   );
-}
+};
 
