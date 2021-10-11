@@ -1,8 +1,9 @@
 import React, { useState } from 'react';
 import { Modal, TouchableWithoutFeedback, Keyboard, Alert } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
-import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useForm } from 'react-hook-form';
+import { useAuth } from '../../hooks/Auth';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import * as Yup from 'yup';
 import { yupResolver } from '@hookform/resolvers/yup';
 import uuid from 'react-native-uuid';
@@ -36,6 +37,7 @@ const schema = Yup.object().shape({
   
 
 export function Register() {
+    const { user } = useAuth();
     const [transactionType, setTransactionType] = useState('');
     const [categoryModalOpen, setCategoryModalOpen] = useState(false);
     const [category, setCategory] = useState({
@@ -76,7 +78,7 @@ export function Register() {
                 date: new Date()
             }
         try {
-            const dataKey = '@gofinances:transactions';
+            const dataKey = `@gofinances:transactions_user:${user.id}`;
             const data = await AsyncStorage.getItem(dataKey);
             const currentData = data ? JSON.parse(data) : [];
             const dataFormatted = [...currentData, newTransaction]

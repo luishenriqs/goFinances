@@ -1,6 +1,7 @@
 import React, { useState, useCallback } from 'react';
 import { useFocusEffect } from '@react-navigation/native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { useAuth } from '../../hooks/Auth';
 import { ActivityIndicator } from 'react-native';
 import { VictoryPie } from 'victory-native';
 import { useBottomTabBarHeight } from '@react-navigation/bottom-tabs';
@@ -55,6 +56,7 @@ export function Resume() {
     const [totalByCategory, setTotalByCategory] = useState<ICategoryData[]>([]);
 
     const theme = useTheme();
+    const { user } = useAuth();
 
     // Filter to select date;
     function handleDateChange(action: 'next' | 'prev') {
@@ -67,7 +69,7 @@ export function Resume() {
 
     async function request() {
         setIsLoading(false);
-        const dataKey = '@gofinances:transactions';
+        const dataKey = `@gofinances:transactions_user:${user.id}`;
         const response = await AsyncStorage.getItem(dataKey);
         const responseFormatted = response ? JSON.parse(response) : [];
 
