@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Alert, ActivityIndicator } from 'react-native';
+import { Alert, ActivityIndicator, Platform } from 'react-native';
 import { RFValue } from 'react-native-responsive-fontsize';
 import { useAuth } from '../../hooks/Auth';
 import { useTheme } from 'styled-components';
@@ -65,10 +65,20 @@ export function SignIn() {
                             muito simples
                         </Title>
                     </TitleWrapper>
-                    <SignInTitle>
-                        Faça o seu login {'\n'}
-                        com uma das contas abaixo
-                    </SignInTitle>
+                    {
+                        Platform.OS === 'ios' ? (
+                            <SignInTitle>
+                                Faça o seu login {'\n'}
+                                com uma das contas abaixo
+                            </SignInTitle>
+                        ) : (
+                            <SignInTitle>
+                                Faça o seu login {'\n'}
+                                com uma conta Google
+                            </SignInTitle>
+                        )
+                    }
+  
                 </Header>
                 <Footer>
                     <FooterWrapper>
@@ -77,11 +87,14 @@ export function SignIn() {
                             svg={GoogleSvg}
                             onPress={handleSignInWithGoogle}
                         />
-                        <SignInSocialButton 
-                            title='Entrar com Apple'
-                            svg={AppleSvg}
-                            onPress={handleSignInWithApple}
-                        />
+                        {
+                            Platform.OS === 'ios' && 
+                            <SignInSocialButton 
+                                title='Entrar com Apple'
+                                svg={AppleSvg}
+                                onPress={handleSignInWithApple}
+                            />
+                        }
                     </FooterWrapper>
                     { isLoading &&
                         <ActivityIndicator
